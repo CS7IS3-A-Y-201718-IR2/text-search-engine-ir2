@@ -14,7 +14,7 @@ import com.ir.searchengine.constants.Constants;
 
 public class XMLQueryParser {
 
-	Logger logger = Logger.getLogger(XMLQueryParser.class);
+	private static final Logger logger = Logger.getLogger(XMLQueryParser.class);
 
 	private TopicHandler th;
 
