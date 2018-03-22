@@ -28,7 +28,7 @@ public class TopicHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String tName, Attributes attributes) throws SAXException {
 
-		System.out.println("Start Element :" + tName);
+		//System.out.println("Start Element :" + tName);
 
 		if (tName.equalsIgnoreCase("num")) {
 			isNum = true;
@@ -49,7 +49,7 @@ public class TopicHandler extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String tName) throws SAXException {
 
-		System.out.println("End Element :" + tName);
+		//System.out.println("End Element :" + tName);
 
 	}
 	
