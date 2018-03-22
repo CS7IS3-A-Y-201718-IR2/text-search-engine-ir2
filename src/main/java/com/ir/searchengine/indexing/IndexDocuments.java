@@ -14,8 +14,6 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import com.ir.searchengine.constants.Constants;
-
 public class IndexDocuments {
 
 	Logger logger = Logger.getLogger(IndexDocuments.class);
