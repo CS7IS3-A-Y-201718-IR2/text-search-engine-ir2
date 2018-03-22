@@ -39,7 +39,7 @@ public class DocLoader {
 			
 		}
 		
-		logger.info("Finished loading all docs in memory.");	
+		logger.info("Finished loading Fbis docs in memory.");	
 		return documents;
 	}
 
@@ -64,7 +64,7 @@ public class DocLoader {
 
 		}
 		
-		logger.info("Finished loading all docs in memory.");
+		logger.info("Finished loading Fr94 docs in memory.");
 		return documents;
 	}
 	
@@ -89,7 +89,7 @@ public class DocLoader {
 
 		}
 		
-		logger.info("Finished loading all docs in memory.");
+		logger.info("Finished loading Ft docs in memory.");
 		return documents;
 	}
 	
@@ -114,7 +114,7 @@ public class DocLoader {
 
 		}
 		
-		logger.info("Finished loading all docs in memory.");
+		logger.info("Finished loading LatTimes docs in memory.");
 		return documents;
 	}
 	

@@ -27,7 +27,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.xml.sax.SAXException;
 
-import com.ir.searchengine.analyzer.CustomAnalyzer;
 import com.ir.searchengine.constants.Constants;
 import com.ir.searchengine.indexing.IndexDocuments;
 import com.ir.searchengine.query.TopicDto;
@@ -42,8 +41,7 @@ public class Application {
 		Application app = new Application();
 
 		try {
-			Directory dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
-
+			Directory dir = null;
 			// Analyzer analyzer = new CustomAnalyzer();
 			Analyzer analyzer = new StandardAnalyzer();
 			Similarity similarity = new BM25Similarity();
@@ -54,6 +52,8 @@ public class Application {
 			// If the directory exists then do not recreate indexes
 			if (!new File(Constants.INDEX_DIR).exists()) {
 				
+				dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
+				
 				// create the directory
 				new File(Constants.INDEX_DIR).mkdirs();
 				
@@ -62,6 +62,9 @@ public class Application {
 				idx.indexFr94Docs();
 				idx.indexFtDocs();
 				idx.indexLatTimeDocs();
+				logger.info("Finished indexing all docs.");
+			} else {
+				dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
 			}
 
 			for (Query query : queries)
@@ -131,7 +134,7 @@ public class Application {
 					int docId = hits[i].doc;
 					double score = hits[i].score;
 					Document d = searcher.doc(docId);
-					System.out.println((i + 1) + ". " + d.get("docId") + "\t" + d.get("title") + "\t" + score);
+					System.out.println((i + 1) + ". \t" + d.get("docId") + "\t" + score);
 				}
 			}
 

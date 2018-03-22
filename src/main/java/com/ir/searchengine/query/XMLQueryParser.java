@@ -27,7 +27,7 @@ public class XMLQueryParser {
 		try {
 			logger.info("Parsing topics...");
 			saxParser.parse(Constants.QUERY_FILE_PATH, th);
-			logger.info("Queries topics successfully.");
+			logger.info("Topics parsed successfully.");
 		} catch (IOException e) {
 			logger.error("Unable to parse topics.", e);
 		}
