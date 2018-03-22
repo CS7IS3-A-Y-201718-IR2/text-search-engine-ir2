@@ -22,18 +22,22 @@ public class IndexDocuments {
 	DocLoader docLoader;
 	Analyzer analyzer;
 	Similarity similarity;
+	String INDEX_DIR = null;
+	String dataSource;
 
-	public IndexDocuments(Analyzer analyzer, Similarity similarity) {
+	public IndexDocuments(Analyzer analyzer, Similarity similarity, String INDEX_DIR, String dataSource) {
 		this.docLoader = new DocLoader();
 		this.analyzer = analyzer;
 		this.similarity = similarity;
+		this.INDEX_DIR = INDEX_DIR;
+		this.dataSource = dataSource;
 	}
 
 	public void indexFbisDocs() {
-		List<Document> docs = docLoader.loadFbisDocs();
+		List<Document> docs = docLoader.loadFbisDocs(dataSource+"/fbis_docs");
 		IndexWriterConfig iwc = getIndexWriterConfig(analyzer, similarity);
 		
-		try (Directory dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
+		try (Directory dir = FSDirectory.open(Paths.get(INDEX_DIR));
 				IndexWriter writer = new IndexWriter(dir, iwc)) {
 			writer.addDocuments(docs);
 		} catch (IOException e) {
@@ -42,10 +46,10 @@ public class IndexDocuments {
 	}
 
 	public void indexFr94Docs() {
-		List<Document> docs = docLoader.loadFr94Docs();
+		List<Document> docs = docLoader.loadFr94Docs(dataSource+"/fr94_docs");
 		IndexWriterConfig iwc = getIndexWriterConfig(analyzer, similarity);
 
-		try (Directory dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
+		try (Directory dir = FSDirectory.open(Paths.get(INDEX_DIR));
 				IndexWriter writer = new IndexWriter(dir, iwc)) {
 			writer.addDocuments(docs);
 		} catch (IOException e) {
@@ -54,10 +58,10 @@ public class IndexDocuments {
 	}
 
 	public void indexFtDocs() {
-		List<Document> docs = docLoader.loadFtDocs();
+		List<Document> docs = docLoader.loadFtDocs(dataSource+"/ft_docs");
 		IndexWriterConfig iwc = getIndexWriterConfig(analyzer, similarity);
 
-		try (Directory dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
+		try (Directory dir = FSDirectory.open(Paths.get(INDEX_DIR));
 				IndexWriter writer = new IndexWriter(dir, iwc)) {
 			writer.addDocuments(docs);
 		} catch (IOException e) {
@@ -66,10 +70,10 @@ public class IndexDocuments {
 	}
 
 	public void indexLatTimeDocs() {
-		List<Document> docs = docLoader.loadLatTimesDocs();
+		List<Document> docs = docLoader.loadLatTimesDocs(dataSource+"/latimes_docs");
 		IndexWriterConfig iwc = getIndexWriterConfig(analyzer, similarity);
 
-		try (Directory dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
+		try (Directory dir = FSDirectory.open(Paths.get(INDEX_DIR));
 				IndexWriter writer = new IndexWriter(dir, iwc)) {
 			writer.addDocuments(docs);
 		} catch (IOException e) {

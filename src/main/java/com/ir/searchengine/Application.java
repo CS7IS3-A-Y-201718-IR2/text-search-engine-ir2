@@ -27,10 +27,11 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.xml.sax.SAXException;
 
-import com.ir.searchengine.constants.Constants;
 import com.ir.searchengine.indexing.IndexDocuments;
 import com.ir.searchengine.query.TopicDto;
 import com.ir.searchengine.query.XMLQueryParser;
+import com.ir.searchengine.results.Result;
+import com.ir.searchengine.results.ResultsWriter;
 
 public class Application {
 
@@ -38,6 +39,40 @@ public class Application {
 
 	public static void main(String args[]) {
 
+		String outputFolder = null;
+		String dataSourcePath = null;
+		String queryFile = null;
+		String indexDirPath = null;
+		
+		for (int i = 0; i < args.length; i++) {
+			if ("-output".equals(args[i])) {
+				if (args[i + 1] != null || !args[i + 1].equals(""))
+					outputFolder = args[i + 1];
+				else
+					throw new RuntimeException("Output directory not present! Must specify as argument.");
+				i++;
+			} else if ("-dataSource".equals(args[i])) {
+				if (args[i + 1] != null || !args[i + 1].equals(""))
+					dataSourcePath = args[i + 1];
+				else
+					throw new RuntimeException("Must specify source folder for data.");
+				i++;
+			} else if ("-queryFile".equals(args[i])) {
+				if (args[i + 1] != null || !args[i + 1].equals(""))
+					queryFile = args[i + 1];
+				else
+					throw new RuntimeException("Must specify the location of query file.");
+				i++;
+			} else if ("-indexDir".equals(args[i])) {
+				if (args[i + 1] != null || !args[i + 1].equals(""))
+					indexDirPath = args[i + 1];
+				else
+					throw new RuntimeException("Specify a location to store indexes.");
+				i++;
+			}
+		}
+		
+		// Declare a Application object
 		Application app = new Application();
 
 		try {
@@ -46,29 +81,50 @@ public class Application {
 			Analyzer analyzer = new StandardAnalyzer();
 			Similarity similarity = new BM25Similarity();
 
-			List<TopicDto> topics = app.loadTopics();
+			List<TopicDto> topics = app.loadTopics(queryFile);
 			List<Query> queries = app.createQuery(analyzer, topics);
 			
 			// If the directory exists then do not recreate indexes
-			if (!new File(Constants.INDEX_DIR).exists()) {
+			if (!new File(indexDirPath).exists()) {
 				
-				dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
+				dir = FSDirectory.open(Paths.get(indexDirPath));
 				
 				// create the directory
-				new File(Constants.INDEX_DIR).mkdirs();
+				new File(indexDirPath).mkdirs();
 				
-				IndexDocuments idx = new IndexDocuments(analyzer, similarity);
+				IndexDocuments idx = new IndexDocuments(analyzer, similarity, indexDirPath, dataSourcePath);
 				idx.indexFbisDocs();
 				idx.indexFr94Docs();
 				idx.indexFtDocs();
 				idx.indexLatTimeDocs();
 				logger.info("Finished indexing all docs.");
 			} else {
-				dir = FSDirectory.open(Paths.get(Constants.INDEX_DIR));
+				dir = FSDirectory.open(Paths.get(indexDirPath));
 			}
+			
+			List<Result> results = new ArrayList<>();
+			int queryCount = 1;
 
-			for (Query query : queries)
-				app.fireQuery(query, dir, similarity, 10);
+			for (Query query : queries) {
+				
+				ScoreDoc[] hits = app.fireQuery(query, dir, similarity, 10);
+				for (int i = 0; i < hits.length; ++i) {
+					int docId = hits[i].doc;
+					double score = hits[i].score;
+
+					Result result = new Result(queryCount + "", "q0", (docId + 1) + "", (i + 1) + "", score + "", "exp");
+					results.add(result);
+				}
+
+				queryCount++;
+			}
+			
+			try {
+
+				new ResultsWriter(results, outputFolder).writeResults();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -81,10 +137,10 @@ public class Application {
 	 * 
 	 * @throws Exception
 	 */
-	public List<TopicDto> loadTopics() throws Exception {
+	public List<TopicDto> loadTopics(String queryFile) throws Exception {
 		XMLQueryParser xmlqp;
 		try {
-			xmlqp = new XMLQueryParser();
+			xmlqp = new XMLQueryParser(queryFile);
 			List<TopicDto> topics = xmlqp.getQueryTopics();
 			return topics;
 		} catch (SAXException | ParserConfigurationException e) {

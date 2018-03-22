@@ -18,5 +18,5 @@ public class Constants {
 	
 	public static final String PARSED_LATTIMES_DOCS = BASE_PATH + "/parsed-docs/latimes_docs";
 	
-	public static final String INDEX_DIR = "src/main/resources/indexes";
+	//public static final String INDEX_DIR = "src/main/resources/indexes";
 }

@@ -12,17 +12,15 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
-import com.ir.searchengine.constants.Constants;
-
 public class DocLoader {
 
 	Logger logger = Logger.getLogger(DocLoader.class);
 			
-	public List<Document> loadFbisDocs() {
+	public List<Document> loadFbisDocs(String dataSource) {
 
 		List<Document> documents = new ArrayList<Document>();
 		
-		File folder = new File(Constants.PARSED_FBIS_DOCS);
+		File folder = new File(dataSource);
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try (Scanner fs = new Scanner(file)) {
@@ -43,11 +41,11 @@ public class DocLoader {
 		return documents;
 	}
 
-	public List<Document> loadFr94Docs() {
+	public List<Document> loadFr94Docs(String dataSource) {
 
 		List<Document> documents = new ArrayList<Document>();
 		
-		File folder = new File(Constants.PARSED_FR94_DOCS);
+		File folder = new File(dataSource);
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try (Scanner fs = new Scanner(file)) {
@@ -68,11 +66,11 @@ public class DocLoader {
 		return documents;
 	}
 	
-	public List<Document> loadFtDocs() {
+	public List<Document> loadFtDocs(String dataSource) {
 
 		List<Document> documents = new ArrayList<Document>();
 		
-		File folder = new File(Constants.PARSED_FT_DOCS);
+		File folder = new File(dataSource);
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try (Scanner fs = new Scanner(file)) {
@@ -93,11 +91,11 @@ public class DocLoader {
 		return documents;
 	}
 	
-	public List<Document> loadLatTimesDocs() {
+	public List<Document> loadLatTimesDocs(String dataSource) {
 
 		List<Document> documents = new ArrayList<Document>();
 		
-		File folder = new File(Constants.PARSED_LATTIMES_DOCS);
+		File folder = new File(dataSource);
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try (Scanner fs = new Scanner(file)) {
