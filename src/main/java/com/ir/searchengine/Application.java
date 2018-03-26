@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -82,7 +84,7 @@ public class Application {
 			Similarity similarity = new BM25Similarity();
 
 			List<TopicDto> topics = app.loadTopics(queryFile);
-			List<Query> queries = app.createQuery(analyzer, topics);
+			Map<String, Query> queries = app.createQuery(analyzer, topics);
 			
 			// If the directory exists then do not recreate indexes
 			if (!new File(indexDirPath).exists()) {
@@ -103,20 +105,19 @@ public class Application {
 			}
 			
 			List<Result> results = new ArrayList<>();
-			int queryCount = 1;
-
-			for (Query query : queries) {
+			
+			
+			for (Map.Entry<String, Query> entry : queries.entrySet())
+			{
 				
-				ScoreDoc[] hits = app.fireQuery(query, dir, similarity, 10);
+				String[][] hits = app.fireQuery(entry.getValue(), dir, similarity, 10);
 				for (int i = 0; i < hits.length; ++i) {
-					int docId = hits[i].doc;
-					double score = hits[i].score;
+					String docId = hits[i][0];
+					String score = hits[i][1];
 
-					Result result = new Result(queryCount + "", "q0", (docId + 1) + "", (i + 1) + "", score + "", "exp");
+					Result result = new Result(entry.getKey().trim(), "q0", docId, (i + 1) + "", score + "", "exp");
 					results.add(result);
 				}
-
-				queryCount++;
 			}
 			
 			try {
@@ -142,6 +143,12 @@ public class Application {
 		try {
 			xmlqp = new XMLQueryParser(queryFile);
 			List<TopicDto> topics = xmlqp.getQueryTopics();
+			
+			for (TopicDto topic: topics) {
+				String num = topic.getNum().split(": ")[1];
+				topic.setNum(num);
+			}
+			
 			return topics;
 		} catch (SAXException | ParserConfigurationException e) {
 			logger.error("Error thrown when loading topics.", e);
@@ -149,11 +156,11 @@ public class Application {
 		}
 	}
 
-	public List<Query> createQuery(Analyzer analyzer, List<TopicDto> topics) {
+	public Map<String, Query> createQuery(Analyzer analyzer, List<TopicDto> topics) {
 		HashMap<String, Float> boosts = new HashMap<String, Float>();
 		boosts.put("content", 1f);
 
-		List<Query> queries = new ArrayList<>();
+		Map<String, Query> queries = new HashMap();
 
 		for (TopicDto topic : topics) {
 			MultiFieldQueryParser multiFieldQP = new MultiFieldQueryParser(new String[] { "content" }, analyzer,
@@ -161,7 +168,7 @@ public class Application {
 			Query q;
 			try {
 				q = multiFieldQP.parse(topic.getDesc());
-				queries.add(q);
+				queries.put(topic.getNum(), q);
 			} catch (ParseException e) {
 				logger.error("Error parsing query.");
 			}
@@ -170,7 +177,7 @@ public class Application {
 		return queries;
 	}
 
-	public ScoreDoc[] fireQuery(Query query, Directory dir, Similarity similarity, int hitsPerPage) {
+	public String[][] fireQuery(Query query, Directory dir, Similarity similarity, int hitsPerPage) {
 
 		try (IndexReader reader = DirectoryReader.open(dir)) {
 			IndexSearcher searcher = new IndexSearcher(reader);
@@ -180,25 +187,31 @@ public class Application {
 
 			TopDocs docs = searcher.search(query, hitsPerPage);
 			ScoreDoc[] hits = docs.scoreDocs;
-
+			
+			String[][] res = new String[hits.length][2];
+			
 			// display results
 			boolean printResults = true;
+			
 			if (printResults) {
 				System.out.println("Found " + hits.length + " hits.");
 				System.err.print("\nRES_NO | DOCID | TITLE | SCORE\n");
-				for (int i = 0; i < hits.length; ++i) {
-					int docId = hits[i].doc;
-					double score = hits[i].score;
-					Document d = searcher.doc(docId);
-					System.out.println((i + 1) + ". \t" + d.get("docId") + "\t" + score);
-				}
+			}
+			
+			for (int i = 0; i < hits.length; ++i) {
+				int docId = hits[i].doc;
+				double score = hits[i].score;
+				Document d = searcher.doc(docId);
+				//System.out.println((i + 1) + ". \t" + d.get("docId") + "\t" + score);
+				res[i][0] = d.get("docId");
+				res[i][1] = score+"";
 			}
 
 			// reader can only be closed when there
 			// is no need to access the documents any more.
 			reader.close();
 
-			return hits;
+			return res;
 		} catch (IOException e) {
 			logger.error("Failed to execute query '" + query + "'", e);
 		}
