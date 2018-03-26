@@ -109,8 +109,7 @@ public class Application {
 			
 			for (Map.Entry<String, Query> entry : queries.entrySet())
 			{
-				
-				String[][] hits = app.fireQuery(entry.getValue(), dir, similarity, 10);
+				String[][] hits = app.fireQuery(entry.getValue(), dir, similarity, 1000);
 				for (int i = 0; i < hits.length; ++i) {
 					String docId = hits[i][0];
 					String score = hits[i][1];
