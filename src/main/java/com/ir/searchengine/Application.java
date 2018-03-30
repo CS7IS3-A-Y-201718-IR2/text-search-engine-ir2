@@ -13,12 +13,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -29,6 +31,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.xml.sax.SAXException;
 
+import com.ir.searchengine.analyzer.CustomAnalyzer;
 import com.ir.searchengine.indexing.IndexDocuments;
 import com.ir.searchengine.query.TopicDto;
 import com.ir.searchengine.query.XMLQueryParser;
@@ -79,8 +82,8 @@ public class Application {
 
 		try {
 			Directory dir = null;
-			// Analyzer analyzer = new CustomAnalyzer();
-			Analyzer analyzer = new StandardAnalyzer();
+			Analyzer analyzer = new CustomAnalyzer();
+			//Analyzer analyzer = new EnglishAnalyzer();
 			Similarity similarity = new BM25Similarity();
 
 			List<TopicDto> topics = app.loadTopics(queryFile);
@@ -166,7 +169,7 @@ public class Application {
 					boosts);
 			Query q;
 			try {
-				q = multiFieldQP.parse(topic.getDesc());
+				q = multiFieldQP.parse(topic.getDesc() + topic.getTitle());
 				queries.put(topic.getNum(), q);
 			} catch (ParseException e) {
 				logger.error("Error parsing query.");
