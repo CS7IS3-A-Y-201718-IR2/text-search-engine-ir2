@@ -169,7 +169,7 @@ public class Application {
 					boosts);
 			Query q;
 			try {
-				q = multiFieldQP.parse(topic.getDesc() + topic.getTitle());
+				q = multiFieldQP.parse(topic.getTitle()+topic.getDesc());
 				queries.put(topic.getNum(), q);
 			} catch (ParseException e) {
 				logger.error("Error parsing query.");

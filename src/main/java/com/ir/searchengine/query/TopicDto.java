@@ -7,12 +7,15 @@ public class TopicDto {
 	String title;
 
 	String desc;
+	
+	String narrative;
 
-	public TopicDto(String num, String title, String desc) {
+	public TopicDto(String num, String title, String desc, String narrative) {
 		super();
 		this.num = num;
 		this.title = title;
 		this.desc = desc;
+		this.narrative = narrative;
 	}
 
 	public String getNum() {
@@ -37,5 +40,13 @@ public class TopicDto {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	public String getNarrative() {
+		return narrative;
+	}
+
+	public void setNarrative(String narrative) {
+		this.narrative = narrative;
 	}
 }

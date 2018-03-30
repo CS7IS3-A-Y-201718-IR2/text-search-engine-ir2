@@ -14,10 +14,13 @@ public class TopicHandler extends DefaultHandler {
 	String title;
 
 	String desc;
+	
+	String narrative;
 
 	boolean isNum = false;
 	boolean isTitle = false;
 	boolean isDesc = false;
+	boolean isNarrative = false;
 	
 	List<TopicDto> topics;
 
@@ -40,6 +43,10 @@ public class TopicHandler extends DefaultHandler {
 
 		if (tName.equalsIgnoreCase("desc")) {
 			isDesc = true;
+		}
+		
+		if (tName.equalsIgnoreCase("narr")) {
+			isNarrative = true;
 		}
 
 		// Ignoring the narrative
@@ -69,11 +76,15 @@ public class TopicHandler extends DefaultHandler {
 		if (isDesc) {
 			desc = new String(ch, start, length);
 			isDesc = false;
+		}
+		
+		if (isNarrative) {
+			narrative = new String(ch, start, length);
+			isNarrative = false;
 			
-			TopicDto topic = new TopicDto(num, title, desc);
+			TopicDto topic = new TopicDto(num, title, desc, narrative);
 			topics.add(topic);
 		}
-
 	}
 	
 	public List<TopicDto> getTopics() {
