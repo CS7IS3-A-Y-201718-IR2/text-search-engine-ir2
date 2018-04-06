@@ -12,6 +12,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.jsoup.Jsoup;
 
 public class DocLoader {
 
@@ -25,13 +26,7 @@ public class DocLoader {
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try {
-				String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-				docId = file.getName();
-
-				Document doc = new Document();
-				doc.add(new StringField("docId", docId, Field.Store.YES));
-				doc.add(new TextField("content", content, Field.Store.YES));
-				documents.add(doc);
+				docId = addFileToDoc(documents, file);
 			} catch (IOException e) {
 				logger.error("Error loading Fbis: " + docId);
 			}
@@ -50,13 +45,7 @@ public class DocLoader {
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try {
-				String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-				docId = file.getName();
-
-				Document doc = new Document();
-				doc.add(new StringField("docId", docId, Field.Store.YES));
-				doc.add(new TextField("content", content, Field.Store.YES));
-				documents.add(doc);
+				docId = addFileToDoc(documents, file);
 			} catch (IOException e) {
 				logger.error("Error loading Fr94Doc: " + docId);
 			}
@@ -75,13 +64,7 @@ public class DocLoader {
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try {
-				String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-				docId = file.getName();
-
-				Document doc = new Document();
-				doc.add(new StringField("docId", docId, Field.Store.YES));
-				doc.add(new TextField("content", content, Field.Store.YES));
-				documents.add(doc);
+				docId = addFileToDoc(documents, file);
 			} catch (IOException e) {
 				logger.error("Error loading FtDoc: " + docId);
 			}
@@ -100,13 +83,7 @@ public class DocLoader {
 		for (final File file : folder.listFiles()) {
 			String docId = null;
 			try {
-				String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-				docId = file.getName();
-
-				Document doc = new Document();
-				doc.add(new StringField("docId", docId, Field.Store.YES));
-				doc.add(new TextField("content", content, Field.Store.YES));
-				documents.add(doc);
+				docId = addFileToDoc(documents, file);
 			} catch (IOException e) {
 				logger.error("Error loading LatTimesDoc: " + docId);
 			}
@@ -115,6 +92,22 @@ public class DocLoader {
 
 		logger.info("Finished loading LatTimes docs in memory.");
 		return documents;
+	}
+	
+	private String addFileToDoc(List<Document> documents, File file) throws IOException {
+		String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+//		org.jsoup.nodes.Document doc = Jsoup.parse(file, "UTF-8", "");
+//		String title = doc.select("title").text();
+//		String content = doc.select("content").text();
+		String docId = file.getName();
+
+		Document luceneDoc = new Document();
+		luceneDoc.add(new StringField("docId", docId, Field.Store.YES));
+//		luceneDoc.add(new TextField("title", title, Field.Store.YES));
+		luceneDoc.add(new TextField("content", content, Field.Store.YES));
+		documents.add(luceneDoc);
+		
+		return docId;
 	}
 
 }
