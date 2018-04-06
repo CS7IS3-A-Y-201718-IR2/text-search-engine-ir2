@@ -94,7 +94,7 @@ public class Application {
 				if (args[i + 1] != null || !args[i + 1].equals(""))
 					assets = args[i + 1];
 				else
-					throw new RuntimeException("Specify a location to store indexes.");
+					throw new RuntimeException("Specify a for the assets dir.");
 				i++;
 			}
 		}
@@ -109,8 +109,7 @@ public class Application {
 
 		try {
 			Directory dir = null;
-			//Analyzer analyzer = new CustomAnalyzer();
-			Analyzer analyzer = new EnglishAnalyzer();
+			Analyzer analyzer = new CustomAnalyzer();
 			Similarity similarity = new BM25Similarity();
 
 			List<TopicDto> topics = app.loadTopics(queryFile);
