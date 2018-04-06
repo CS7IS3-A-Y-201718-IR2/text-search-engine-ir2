@@ -15,6 +15,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Fields;
@@ -41,6 +42,7 @@ import org.apache.lucene.util.BytesRef;
 import org.xml.sax.SAXException;
 
 import com.ir.searchengine.analyzer.CustomAnalyzer;
+import com.ir.searchengine.constants.Constants;
 import com.ir.searchengine.indexing.IndexDocuments;
 import com.ir.searchengine.query.QueryExpansion;
 import com.ir.searchengine.query.ScorePair;
@@ -60,6 +62,7 @@ public class Application {
 		String dataSourcePath = null;
 		String queryFile = null;
 		String indexDirPath = null;
+		String assets = null;
 
 		for (int i = 0; i < args.length; i++) {
 			if ("-output".equals(args[i])) {
@@ -87,17 +90,27 @@ public class Application {
 					throw new RuntimeException("Specify a location to store indexes.");
 				i++;
 			}
+			else if ("-assets".equals(args[i])) {
+				if (args[i + 1] != null || !args[i + 1].equals(""))
+					assets = args[i + 1];
+				else
+					throw new RuntimeException("Specify a location to store indexes.");
+				i++;
+			}
 		}
 
-		// Declare a Application object
+		Constants.SYNONYM_FILE_PATH = assets + "/stopwords.txt";
+		Constants.STOP_WORDS_FILE_PATH = assets + "/wn_s.pl";
+		
+;		// Declare a Application object
 		Application app = new Application();
 
 		QueryExpansion queryExpander = new QueryExpansion();
 
 		try {
 			Directory dir = null;
-			Analyzer analyzer = new CustomAnalyzer();
-			// Analyzer analyzer = new EnglishAnalyzer();
+			//Analyzer analyzer = new CustomAnalyzer();
+			Analyzer analyzer = new EnglishAnalyzer();
 			Similarity similarity = new BM25Similarity();
 
 			List<TopicDto> topics = app.loadTopics(queryFile);

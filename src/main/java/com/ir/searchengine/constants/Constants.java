@@ -7,9 +7,9 @@ public class Constants {
 	
 	public static final String QUERY_FILE_PATH = "src/main/resources/topics/topics.txt";
 	
-	public static final String SYNONYM_FILE_PATH = "src/main/resources/wn_s.pl";
+	public static String SYNONYM_FILE_PATH = "src/main/resources/wn_s.pl";
 	
-	public static final String STOP_WORDS_FILE_PATH = "src/main/resources/stopwords.txt";
+	public static String STOP_WORDS_FILE_PATH = "src/main/resources/stopwords.txt";
 	
 	public static final String DOCS_FILE_PATH = BASE_PATH + "/Assignment_Two";
 	
