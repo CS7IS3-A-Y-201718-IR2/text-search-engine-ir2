@@ -55,7 +55,7 @@ public class QueryExpansion {
 		Map<String, Integer> queryMap = wf.getFrequency(query);
 		queryMap = MapUtil.sortByValue(queryMap);
 		
-		query = generateQueryUsingTopKWord(queryMap, 4);
+		query = generateQueryUsingTopKWord(queryMap, 10);
 		
 		return query;
 	}

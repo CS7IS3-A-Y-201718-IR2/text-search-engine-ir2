@@ -10,8 +10,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexOptions;
 import org.jsoup.Jsoup;
 
 public class DocLoader {
@@ -95,16 +97,22 @@ public class DocLoader {
 	}
 	
 	private String addFileToDoc(List<Document> documents, File file) throws IOException {
-		String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-//		org.jsoup.nodes.Document doc = Jsoup.parse(file, "UTF-8", "");
-//		String title = doc.select("title").text();
-//		String content = doc.select("content").text();
+//		String content = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+		org.jsoup.nodes.Document doc = Jsoup.parse(file, "UTF-8", "");
+		String title = doc.select("title").text();
+		String content = doc.select("content").text();
 		String docId = file.getName();
 
 		Document luceneDoc = new Document();
 		luceneDoc.add(new StringField("docId", docId, Field.Store.YES));
-//		luceneDoc.add(new TextField("title", title, Field.Store.YES));
-		luceneDoc.add(new TextField("content", content, Field.Store.YES));
+		luceneDoc.add(new TextField("title", title, Field.Store.YES));
+
+		FieldType myFieldType = new FieldType(TextField.TYPE_STORED);
+		myFieldType.setStoreTermVectors(true);
+		
+		//luceneDoc.add(new TextField("content", content, myFieldType));
+		luceneDoc.add(new Field("content", content, myFieldType));
+		
 		documents.add(luceneDoc);
 		
 		return docId;
